@@ -146,16 +146,21 @@
 
             float newUcolor = sin(noise + u_time * 0.5) + u_color.x;
             float newUcolor2 = sin(noise + u_time * 0.3);
+            float newUcolor3 = normalSin((sin(noise + u_time * 2.)) + (st.y * 0.02) * 200.0, 0.0, 1.0);
             //float amp = smoothstep(0.5, 1., amp);
-            float mouveX = st.y + cos(u_time * 0.08 + amp);
-            gl_FragColor = vec4( st.x + amp, newUcolor2 + cos(u_time * 0.5) + st.y, newUcolor2 , amp);
+            float mouveX = st.y + cos(u_time * 0.05 + amp);
+            
+            // BASE gl_FragColor = vec4( st.x + amp, newUcolor2 + cos(u_time * 0.5) + st.y, newUcolor2 , amp);
+            
+            // Blue to left Rose gradient gl_FragColor = vec4( st. x, u_color.y, u_color.z , 1.0);
+            gl_FragColor = vec4(  st.x + newUcolor2, u_color.x + st.y, newUcolor3 + u_color.x, 1.0);
         }
         " 
         ></canvas>
         <section><h1></h1></section>
-        <section><h1>Section 2</h1></section>
-        <section><h1>Section 3</h1></section>
-        <section><h1>Section 4</h1></section>
+        <section><h1></h1></section>
+        <section><h1></h1></section>
+        <section><h1></h1></section>
         <script>
           // skyblue = vec3(0.361,0.839,0.953)
           var canvas = document.getElementById("glslCanvas");
@@ -165,7 +170,7 @@
           },100);
           //sandbox.setUniform("u_red",0.5); 
           //sandbox.setUniform("u_blue",0.5); 
-          sandbox.setUniform("u_color",0.361,0.839,0.953); 
+          sandbox.setUniform("u_color",0.0,0.0,0.0); 
           //console.log(sandbox.uniforms)
           document.addEventListener('scroll', (e) => {
             //sandbox.uniforms.u_red = e.clientX / window.innerWidth;
@@ -175,8 +180,8 @@
             console.log(window.scrollY);
             let colY = Math.round((window.scrollY / document.body.offsetHeight) * 100) / 100;
             let colX = Math.round(e.clientX / window.innerWidth * 100) / 100;
-            //sandbox.setUniform("u_color", color);
-            sandbox.setUniform("u_color", 0.361,0.839,0.953); 
+            sandbox.setUniform("u_color", colY, colX, 1.); 
+            //sandbox.setUniform("u_color", 0.361,0.839,0.953); 
             //sandbox.setUniform("u_color",`${e.clientY / window.innerHeight}, ${e.clientX / window.innerWidth}, 1.0`); 
             //console.log(e.clientX / window.innerWidth);
           })

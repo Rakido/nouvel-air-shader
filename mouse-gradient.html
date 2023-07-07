@@ -129,9 +129,9 @@
             vec3 color1 = vec3( 1.0, 1.0, 0.0 ); // red
             vec3 color2 = vec3( sin(u_time), u_red, u_red ); // green
              
-            float newUcolor = sin(noise + u_time * 0.1) + u_color.x;
-            float newUcolor2 = cos(noise + u_time * 0.5) + st.y;
-            gl_FragColor = vec4( newUcolor2 + st.y, 1., newUcolor2 + st.x, 1.0);
+            float newUcolor = sin(noise + u_time * 0.5) + u_color.x;
+            float newUcolor2 = cos(noise + u_time * 0.3);
+            gl_FragColor = vec4( 1.0 + newUcolor2, st.x + newUcolor2, sin(u_time) , 1.);
         }
         " 
         ></canvas>

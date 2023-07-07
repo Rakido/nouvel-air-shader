@@ -44,6 +44,11 @@
         uniform float u_blue;
         uniform vec3 u_color;
 
+        float normalSin(float t, float min, float max) {
+          float s = (1.0 + sin(t)) * 0.5;
+          return min + (s * (max - min));
+      }
+
         //	Simplex 3D Noise 
         //	by Ian McEwan, Ashima Arts
         //
@@ -129,9 +134,21 @@
             vec3 color1 = vec3( 1.0, 1.0, 0.0 ); // red
             vec3 color2 = vec3( sin(u_time), u_red, u_red ); // green
              
+
+            float pct = 0.0;
+
+            // a. The DISTANCE from the pixel to the center
+            pct = distance(vec2(st.y),vec2(sin(u_time)));
+
+            // move pct on mouse mouve
+            // create uniform pct vec2(mouseX, mou)
+            float amp = normalSin((st.x * 0.05) + (st.y * 0.002) * 200.0, 0.0, 1.0);
+
             float newUcolor = sin(noise + u_time * 0.5) + u_color.x;
-            float newUcolor2 = cos(noise + u_time * 0.3);
-            gl_FragColor = vec4( 1.0 + newUcolor2, st.x + newUcolor2, sin(u_time) , 1.);
+            float newUcolor2 = sin(noise + u_time * 0.3);
+            //float amp = smoothstep(0.5, 1., amp);
+            float mouveX = st.y + cos(u_time * 0.08 + amp);
+            gl_FragColor = vec4( st.x + amp, newUcolor2 + cos(u_time * 0.5) + st.y, newUcolor2 , amp);
         }
         " 
         ></canvas>

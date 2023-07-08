@@ -134,7 +134,7 @@
           vec2 st = gl_FragCoord.xy/u_resolution;
 
           // Create time variable
-          float t = u_time * 0.1;
+          float t = u_time * 0.3;
 
           // Calculate a noise value to create randomness
           float noise = snoise(vec3(st, t));
@@ -147,15 +147,12 @@
 
           // Calculate the center position of the potato shape
           vec2 shapeCenter = vec2(0.5, 0.5) + vec2(0.1 * cos(u_time), 0.1 * sin(u_time));
-        
-          // Calculate the radius of the potato shape
-          float shapeRadius = 0.2;
 
           float bgX = u_backgroundColor. x;
-          bgX = st.x;
+          bgX = st.y;
         
           // Mix the shape color with the background color based on the distance
-          vec3 finalColor = mix(u_backgroundColor, u_projectColor , newUcolor + u_scrollY);
+          vec3 finalColor = mix(u_backgroundColor + tan(st.x) + u_scrollY, u_projectColor + u_scrollY, newUcolor + sin(noise));
         
           // Output the final color
           gl_FragColor = vec4(finalColor, 1.);
@@ -173,8 +170,8 @@
           </div> 
         </section>
         <section><h1></h1></section>
-        <section><h1>Section 3</h1></section>
-        <section><h1>Section 4</h1></section>
+        <section><h1></h1></section>
+        <section><h1></h1></section>
         <script>
           var canvas = document.getElementById("glslCanvas");
           var sandbox = new GlslCanvas(canvas);
@@ -182,8 +179,8 @@
             canvas.classList.add('show');
           },100);
           
-          sandbox.setUniform("u_projectColor",1.,0.941,0.839); 
-          sandbox.setUniform("u_backgroundColor",1.,0.706,0.192); 
+          sandbox.setUniform("u_projectColor",0.408,0.812,0.859); 
+          sandbox.setUniform("u_backgroundColor",0.937,0.769,0.055); 
           
           const blueBtn = document.getElementById('blue')
           const orangeBlueBtn = document.getElementById('orangeBlue')

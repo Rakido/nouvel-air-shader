@@ -40,9 +40,8 @@
         uniform vec2 u_resolution;
         uniform vec2 u_mouse;
         uniform float u_time;
-        uniform float u_red;
-        uniform float u_blue;
-        uniform vec3 u_color;
+        uniform vec3 u_projectColor;
+        uniform vec3 u_backgroundColor;
 
         //	Simplex 3D Noise 
         //	by Ian McEwan, Ashima Arts
@@ -118,23 +117,53 @@
         return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
                                         dot(p2,x2), dot(p3,x3) ) );
         }
+
+        // Function to generate a smooth circle shape
+        float circle(vec2 center, float radius, vec2 position) {
+          float distance = length(position - center);
+          return smoothstep(radius - 0.01, radius + 0.01, distance);
+        }
         
         void main() {
-            vec2 st = gl_FragCoord.xy/u_resolution;
-            float t = u_time * 0.1;
-            
-            float noise = snoise(vec3(st, t));
-            
-            vec2 pos = (gl_FragCoord.xy - u_mouse.xy * .5) / u_resolution;
-            vec3 color1 = vec3( 1.0, cos(u_time), u_mouse.x ); // red
-             vec3 color2 = vec3( sin(u_time), u_red, u_red ); // green
-             
-            float newUcolor = sin(noise) + u_color.x + pos.x;
-            gl_FragColor = vec4( newUcolor, u_color.y, u_color.z, 1.0);
+          // Normalize screen coordinates
+          vec2 st = gl_FragCoord.xy/u_resolution;
+
+          // Create time variable
+          float t = u_time * 0.3;
+
+          // Calculate a noise value to create randomness
+          float noise = snoise(vec3(st, t));
+
+          // Center mouse position in space
+          vec2 pos = (gl_FragCoord.xy - u_mouse.xy * .5) / u_resolution;
+          
+          // 🔥 Noise value to create lava effects
+          float newUcolor = sin(noise) + u_backgroundColor.x + pos.x;
+
+          // Calculate the center position of the potato shape
+          vec2 shapeCenter = vec2(0.5, 0.5) + vec2(0.1 * cos(u_time), 0.1 * sin(u_time));
+        
+          // Calculate the radius of the potato shape
+          float shapeRadius = 0.2;
+        
+          // Mix the shape color with the background color based on the distance
+          vec3 finalColor = mix(u_backgroundColor, u_projectColor, newUcolor);
+        
+          // Output the final color
+          gl_FragColor = vec4(finalColor, 1.0);
         }
+
+        
         " 
         ></canvas>
-        <section><h1>Section 1</h1></section>
+        <section>
+          <h1>Section 1</h1>
+          <div class="buttons">
+            <button id="orange">Orange</button>
+            <button id="orangeBlue">Orange&Blue</button>
+            <button id="blue">Blue</button>
+          </div> 
+        </section>
         <section><h1>Section 2</h1></section>
         <section><h1>Section 3</h1></section>
         <section><h1>Section 4</h1></section>
@@ -144,22 +173,29 @@
           setTimeout(function(){
             canvas.classList.add('show');
           },100);
-          //sandbox.setUniform("u_red",0.5); 
-          //sandbox.setUniform("u_blue",0.5); 
-          sandbox.setUniform("u_color",1.0,0.,0.); 
-          //console.log(sandbox.uniforms)
-          document.addEventListener('scroll', (e) => {
-            //sandbox.uniforms.u_red = e.clientX / window.innerWidth;
-            //console.log(sandbox.uniforms.u_color);
-            //sandbox.setUniform("u_color",Math.random(),0.,0.); 
-            let color = `${Math.round(e.clientY / window.innerHeight * 100) / 100 }, ${Math.round(e.clientX / window.innerWidth * 100) / 100}, 1.0`
-            console.log(window.scrollY);
-            let colY = Math.round((window.scrollY / document.body.offsetHeight) * 100) / 100;
-            let colX = Math.round(e.clientX / window.innerWidth * 100) / 100;
-            //sandbox.setUniform("u_color", color);
-            sandbox.setUniform("u_color", colY, colX, 1.); 
-            //sandbox.setUniform("u_color",`${e.clientY / window.innerHeight}, ${e.clientX / window.innerWidth}, 1.0`); 
-            //console.log(e.clientX / window.innerWidth);
+          
+          sandbox.setUniform("u_projectColor",1.,0.941,0.839); 
+          sandbox.setUniform("u_backgroundColor",1.,0.706,0.192); 
+          
+          const blueBtn = document.getElementById('blue')
+          const orangeBlueBtn = document.getElementById('orangeBlue')
+          const orangeBtn = document.getElementById('orange')
+          
+          // Actions
+
+          orangeBtn.addEventListener('click', (e) => {
+            sandbox.setUniform("u_projectColor",1.,0.941,0.839); 
+            sandbox.setUniform("u_backgroundColor",1.,0.706,0.192); 
+          })
+
+          orangeBlueBtn.addEventListener('click', (e) => {
+            sandbox.setUniform("u_projectColor",0.361,0.839,0.953); 
+            sandbox.setUniform("u_backgroundColor",1.,0.706,0.192); 
+          })
+
+          blueBtn.addEventListener('click', (e) => {
+            sandbox.setUniform("u_projectColor",0.871,0.969,0.992); 
+            sandbox.setUniform("u_backgroundColor",0.361,0.839,0.953); 
           })
         </script>
     </body>

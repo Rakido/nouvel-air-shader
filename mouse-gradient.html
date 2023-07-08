@@ -129,7 +129,7 @@
           vec2 st = gl_FragCoord.xy/u_resolution;
 
           // Create time variable
-          float t = u_time * 0.3;
+          float t = u_time * 0.1;
 
           // Calculate a noise value to create randomness
           float noise = snoise(vec3(st, t));
@@ -150,7 +150,7 @@
           bgX = st.x;
         
           // Mix the shape color with the background color based on the distance
-          vec3 finalColor = mix(u_backgroundColor + sin(st.x), u_projectColor, newUcolor);
+          vec3 finalColor = mix(u_backgroundColor + sin(st.x), u_projectColor, newUcolor + sin(noise));
         
           // Output the final color
           gl_FragColor = vec4(finalColor, 1.0);
@@ -202,7 +202,17 @@
           })
 
           document.addEventListener('scroll', (e) => {
-            
+            //sandbox.uniforms.u_red = e.clientX / window.innerWidth;
+            //console.log(sandbox.uniforms.u_color);
+            //sandbox.setUniform("u_color",Math.random(),0.,0.); 
+            let color = `${Math.round(e.clientY / window.innerHeight * 100) / 100 }, ${Math.round(e.clientX / window.innerWidth * 100) / 100}, 1.0`
+            console.log(window.scrollY);
+            let colY = Math.round((window.scrollY / document.body.offsetHeight) * 100) / 100;
+            let colX = Math.round(e.clientX / window.innerWidth * 100) / 100;
+            //sandbox.setUniform("u_color", color);
+            sandbox.setUniform("u_projectColor", colY, 0.941, 1.); 
+            //sandbox.setUniform("u_color",`${e.clientY / window.innerHeight}, ${e.clientX / window.innerWidth}, 1.0`); 
+            //console.log(e.clientX / window.innerWidth);
           })
         </script>
     </body>

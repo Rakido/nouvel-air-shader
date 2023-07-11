@@ -40,9 +40,10 @@
         uniform vec2 u_resolution;
         uniform vec2 u_mouse;
         uniform float u_time;
-        uniform float u_red;
-        uniform float u_blue;
-        uniform vec3 u_color;
+        uniform vec3 u_color1;
+        uniform vec3 u_color2;
+        uniform vec3 u_color3;
+        uniform float u_lightness;
 
         //	Simplex 3D Noise 
         //	by Ian McEwan, Ashima Arts
@@ -119,47 +120,118 @@
                                         dot(p2,x2), dot(p3,x3) ) );
         }
         
-        void main() {
-            vec2 st = gl_FragCoord.xy/u_resolution;
-            float t = u_time * 0.1;
+      
+
+        float rand(vec2 co)
+        {
+            return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+        }
+        void main()
+        {
+            vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+            vec2 p = uv * 8.0 - vec2(4.0);
+            float time = u_time * 0.2;
+
+            float noise = snoise(vec3(uv, time));
             
-            float noise = snoise(vec3(st, t));
-            
-            vec2 pos = (gl_FragCoord.xy - u_mouse.xy * .5) / u_resolution;
-            vec3 color1 = vec3( 1.0, cos(u_time), u_mouse.x ); // red
-             vec3 color2 = vec3( sin(u_time), u_red, u_red ); // green
-             
-            float newUcolor = sin(noise) + u_color.x + pos.x;
-            gl_FragColor = vec4( newUcolor, u_color.y, u_color.z, 1.0);
+            // Add animation to the coordinates
+            p.x += sin(time * 0.1) * 0.2;
+            p.y += cos(time * 0.15) * 0.3;
+          
+
+            // Define the colors
+            vec3 orange = vec3(1.0, 0.8, 0.4);
+            vec3 blue = vec3(0.6, 0.8, 1.0);
+            vec3 red = vec3(1.0, 0.6, 0.7);
+
+            // Interpolate the colors based on the fragment's Y coordinate
+            vec3 gradient = mix(u_color1, u_color2, uv.y + cos(noise));
+            gradient = mix(gradient, u_color3, uv.y + sin(noise));
+
+            // Output the final color
+            gl_FragColor = vec4(gradient, u_lightness);
         }
         " 
         ></canvas>
-        <section><h1>Section 1</h1></section>
-        <section><h1>Section 2</h1></section>
-        <section><h1>Section 3</h1></section>
-        <section><h1>Section 4</h1></section>
+        <section>
+          <div class="buttons">
+            <button id="blue-red-orange">Blue Red Orange</button>
+            <button id="peach-lavender-yellow">Peach Lavender Yellow</button>
+            <button id="peach-lavender-orange">Peach Lavender Orange</button>
+            <button id="pink-lilac-blue">Pink Lilac Blue</button>
+            <button id="blue-orange-cherry">Blue Orange Cherry</button>
+          </div>
+          <div class="buttons">
+            <button id="saturated">Saturation +</button>
+            <button id="less-saturated">Saturation -</button>
+          </div>
+        </section>
         <script>
           var canvas = document.getElementById("glslCanvas");
           var sandbox = new GlslCanvas(canvas);
           setTimeout(function(){
             canvas.classList.add('show');
           },100);
-          //sandbox.setUniform("u_red",0.5); 
-          //sandbox.setUniform("u_blue",0.5); 
-          sandbox.setUniform("u_color",1.0,0.,0.); 
-          //console.log(sandbox.uniforms)
+          
+          sandbox.setUniform("u_color1",1.0,0.8,0.4); 
+          sandbox.setUniform("u_color2",0.6,0.8,1.0); 
+          sandbox.setUniform("u_color3",1.0,0.6,0.7);
+          sandbox.setUniform("u_lightness", 1.0); 
+          
+          // Color cases
+          // Button 1
+          document.getElementById('blue-red-orange').addEventListener('click', (e) => {
+            sandbox.setUniform("u_color1",1.0,0.8,0.4); 
+            sandbox.setUniform("u_color2",0.6,0.8,1.0); 
+            sandbox.setUniform("u_color3",1.0,0.6,0.7);
+          })
+
+          // Button 2
+          document.getElementById('peach-lavender-yellow').addEventListener('click', (e) => {
+            sandbox.setUniform("u_color1",1.0,0.7,0.6); 
+            sandbox.setUniform("u_color2",0.8,0.7,1.0); 
+            sandbox.setUniform("u_color3",1.0,0.9,0.5);
+          })
+
+          // Button 3
+          document.getElementById('peach-lavender-orange').addEventListener('click', (e) => {
+            sandbox.setUniform("u_color1",1.0,0.7,0.6); 
+            sandbox.setUniform("u_color2",0.8,0.7,1.0); 
+            sandbox.setUniform("u_color3",1.0,0.6,0.7);
+          })
+
+          // Button 4
+          document.getElementById('pink-lilac-blue').addEventListener('click', (e) => {
+            sandbox.setUniform("u_color1",1.0,0.7,0.8); 
+            sandbox.setUniform("u_color2",0.8,0.7,1.0); 
+            sandbox.setUniform("u_color3",0.7,0.8,0.9);
+          })
+
+          // Button 5
+          document.getElementById('blue-orange-cherry').addEventListener('click', (e) => {
+            sandbox.setUniform("u_color1",0.0,0.4,1.0); 
+            sandbox.setUniform("u_color2",1.0,0.8,0.6); 
+            sandbox.setUniform("u_color3",1.0,0.2,0.9);
+          })
+
+
+          
+          // Saturation
+          document.getElementById('saturated').addEventListener('click', (e) => {
+            sandbox.setUniform("u_lightness", 1.0); 
+          })
+
+          document.getElementById('less-saturated').addEventListener('click', (e) => {
+            sandbox.setUniform("u_lightness", 0.85); 
+          })
+          
+          
           document.addEventListener('scroll', (e) => {
-            //sandbox.uniforms.u_red = e.clientX / window.innerWidth;
-            //console.log(sandbox.uniforms.u_color);
-            //sandbox.setUniform("u_color",Math.random(),0.,0.); 
             let color = `${Math.round(e.clientY / window.innerHeight * 100) / 100 }, ${Math.round(e.clientX / window.innerWidth * 100) / 100}, 1.0`
             console.log(window.scrollY);
             let colY = Math.round((window.scrollY / document.body.offsetHeight) * 100) / 100;
             let colX = Math.round(e.clientX / window.innerWidth * 100) / 100;
-            //sandbox.setUniform("u_color", color);
             sandbox.setUniform("u_color", colY, colX, 1.); 
-            //sandbox.setUniform("u_color",`${e.clientY / window.innerHeight}, ${e.clientX / window.innerWidth}, 1.0`); 
-            //console.log(e.clientX / window.innerWidth);
           })
         </script>
     </body>

@@ -20,7 +20,7 @@
           height: 100vh;
           top: 50%;
           left: 50%;
-          opacity: .6;
+          opacity: 1;
           transform: translate(-50%,-50%);
         }
 
@@ -144,7 +144,7 @@
           vec2 st = gl_FragCoord.xy/u_resolution;
 
           // Create time variable
-          float t = u_time * 0.2;
+          float t = u_time * 0.1;
 
           // Calculate a noise value to create randomness
           float noise = snoise(vec3(st, t));
@@ -158,9 +158,9 @@
           // Calculate the center position of the potato shape
           vec2 shapeCenter = vec2(0.5, 0.5) + vec2(0.1 * cos(u_time), 0.1 * sin(u_time));
 
-        
+          float dryness = 1.2;
           // Mix the shape color with the background color based on the distance
-          vec3 finalColor = mix(u_backgroundColor + sin(noise + st.x), u_backgroundColor, max(0.5, newUcolor));
+          vec3 finalColor = mix(u_backgroundColor + sin(st.x + u_time) + abs(cos(noise + st.y) * dryness), u_backgroundColor, max(0.5, newUcolor));
         
           // Output the final color
           gl_FragColor = vec4(abs(finalColor), 1.);
